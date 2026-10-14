@@ -90,6 +90,10 @@ buttons.forEach(button => {
         }
 
         // Digit or decimal
+        if (value === '.') {
+            if (currentInput.includes('.')) return;
+        }
+
         if (isResultDisplayed) {
             currentInput = "";
             isResultDisplayed = false;
