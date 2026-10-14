@@ -11,7 +11,10 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-    return b === 0 ? "Error" : a / b;
+    if (b === 0) {
+        return "Nice try, genius!";
+    }
+    return a / b;
 }
 
 function operate(operator, a, b) {
@@ -26,6 +29,7 @@ let firstNumber = null;
 let operator = null;
 let secondNumber = null;
 let currentInput = "";
+let isResultDisplayed = false;
 
 const display = document.getElementById('display');
 const buttons = document.querySelectorAll('button');
@@ -39,31 +43,58 @@ buttons.forEach(button => {
             operator = null;
             secondNumber = null;
             currentInput = "";
+            isResultDisplayed = false;
             display.innerText = "0";
             return;
         }
 
         if (value === '=') {
             if (firstNumber !== null && operator !== null && secondNumber !== null) {
-                const result = operate(operator, firstNumber, secondNumber);
+                let result = operate(operator, firstNumber, secondNumber);
+                
+                if (typeof result === 'number') {
+                    result = parseFloat(result.toFixed(8));
+                }
+                
                 display.innerText = result;
-                firstNumber = result;
+                firstNumber = result === "Nice try, genius!" ? null : result;
                 operator = null;
                 secondNumber = null;
                 currentInput = "";
+                isResultDisplayed = true;
             }
             return;
         }
 
         if (['+', '-', '×', '÷'].includes(value)) {
-            firstNumber = parseFloat(display.innerText);
+            const currentVal = parseFloat(display.innerText);
+            
+            if (firstNumber !== null && operator !== null && secondNumber !== null) {
+                let result = operate(operator, firstNumber, secondNumber);
+                if (typeof result === 'number') {
+                    result = parseFloat(result.toFixed(8));
+                }
+                display.innerText = result;
+                firstNumber = result === "Nice try, genius!" ? null : result;
+            } else if (firstNumber === null && secondNumber === null) {
+                firstNumber = currentVal;
+            } else {
+                firstNumber = currentVal;
+            }
+
             operator = value === '+' ? 'add' : value === '-' ? 'subtract' : value === '×' ? 'multiply' : 'divide';
             secondNumber = null;
             currentInput = "";
+            isResultDisplayed = false;
             return;
         }
 
         // Digit or decimal
+        if (isResultDisplayed) {
+            currentInput = "";
+            isResultDisplayed = false;
+        }
+        
         currentInput += value;
         display.innerText = currentInput;
 
