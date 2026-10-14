@@ -14,6 +14,10 @@ function divide(a, b) {
     console.log("The divide function is working!");
 }
 
+let firstNumber = 0;
+let operator = "+";
+let secondNumber = 0;
+
 add(1,2);
 subtract(1,2);
 multiply(1,2);
