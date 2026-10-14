@@ -34,86 +34,100 @@ let isResultDisplayed = false;
 const display = document.getElementById('display');
 const buttons = document.querySelectorAll('button');
 
-buttons.forEach(button => {
-    button.addEventListener('click', () => {
-        const value = button.innerText;
+function handleInput(value) {
+    if (value === 'Clear') {
+        firstNumber = null;
+        operator = null;
+        secondNumber = null;
+        currentInput = "";
+        isResultDisplayed = false;
+        display.innerText = "0";
+        return;
+    }
 
-        if (value === 'Clear') {
-            firstNumber = null;
+    if (value === 'Backspace') {
+        if (isResultDisplayed) return;
+        currentInput = currentInput.slice(0, -1);
+        display.innerText = currentInput === "" ? "0" : currentInput;
+        if (operator !== null) {
+            secondNumber = currentInput === "" ? null : parseFloat(currentInput);
+        }
+        return;
+    }
+
+    if (value === '=') {
+        if (firstNumber !== null && operator !== null && secondNumber !== null) {
+            let result = operate(operator, firstNumber, secondNumber);
+            
+            if (typeof result === 'number') {
+                result = parseFloat(result.toFixed(8));
+            }
+            
+            display.innerText = result;
+            firstNumber = result === "Nice try, genius!" ? null : result;
             operator = null;
             secondNumber = null;
             currentInput = "";
-            isResultDisplayed = false;
-            display.innerText = "0";
-            return;
+            isResultDisplayed = true;
         }
+        return;
+    }
 
-        if (value === '⌫') {
-            if (isResultDisplayed) return;
-            currentInput = currentInput.slice(0, -1);
-            display.innerText = currentInput === "" ? "0" : currentInput;
-            if (operator !== null) {
-                secondNumber = currentInput === "" ? null : parseFloat(currentInput);
-            }
-            return;
-        }
-
-        if (value === '=') {
-            if (firstNumber !== null && operator !== null && secondNumber !== null) {
-                let result = operate(operator, firstNumber, secondNumber);
-                
-                if (typeof result === 'number') {
-                    result = parseFloat(result.toFixed(8));
-                }
-                
-                display.innerText = result;
-                firstNumber = result === "Nice try, genius!" ? null : result;
-                operator = null;
-                secondNumber = null;
-                currentInput = "";
-                isResultDisplayed = true;
-            }
-            return;
-        }
-
-        if (['+', '-', '×', '÷'].includes(value)) {
-            const currentVal = parseFloat(display.innerText);
-            
-            if (firstNumber !== null && operator !== null && secondNumber !== null) {
-                let result = operate(operator, firstNumber, secondNumber);
-                if (typeof result === 'number') {
-                    result = parseFloat(result.toFixed(8));
-                }
-                display.innerText = result;
-                firstNumber = result === "Nice try, genius!" ? null : result;
-            } else if (firstNumber === null && secondNumber === null) {
-                firstNumber = currentVal;
-            } else {
-                firstNumber = currentVal;
-            }
-
-            operator = value === '+' ? 'add' : value === '-' ? 'subtract' : value === '×' ? 'multiply' : 'divide';
-            secondNumber = null;
-            currentInput = "";
-            isResultDisplayed = false;
-            return;
-        }
-
-        // Digit or decimal
-        if (value === '.') {
-            if (currentInput.includes('.')) return;
-        }
-
-        if (isResultDisplayed) {
-            currentInput = "";
-            isResultDisplayed = false;
-        }
+    if (['+', '-', '×', '÷'].includes(value)) {
+        const currentVal = parseFloat(display.innerText);
         
-        currentInput += value;
-        display.innerText = currentInput;
-
-        if (operator !== null) {
-            secondNumber = parseFloat(currentInput);
+        if (firstNumber !== null && operator !== null && secondNumber !== null) {
+            let result = operate(operator, firstNumber, secondNumber);
+            if (typeof result === 'number') {
+                result = parseFloat(result.toFixed(8));
+            }
+            display.innerText = result;
+            firstNumber = result === "Nice try, genius!" ? null : result;
+        } else if (firstNumber === null && secondNumber === null) {
+            firstNumber = currentVal;
+        } else {
+            firstNumber = currentVal;
         }
-    });
+
+        operator = value === '+' ? 'add' : value === '-' ? 'subtract' : value === '×' ? 'multiply' : 'divide';
+        secondNumber = null;
+        currentInput = "";
+        isResultDisplayed = false;
+        return;
+    }
+
+    // Digit or decimal
+    if (value === '.') {
+        if (currentInput.includes('.')) return;
+    }
+
+    if (isResultDisplayed) {
+        currentInput = "";
+        isResultDisplayed = false;
+    }
+    
+    currentInput += value;
+    display.innerText = currentInput;
+
+    if (operator !== null) {
+        secondNumber = parseFloat(currentInput);
+    }
+}
+
+buttons.forEach(button => {
+    button.addEventListener('click', () => handleInput(button.innerText));
+});
+
+window.addEventListener('keydown', (e) => {
+    const keyMap = {
+        '0': '0', '1': '1', '2': '2', '3': '3', '4': '4', 
+        '5': '5', '6': '6', '7': '7', '8': '8', '9': '9',
+        '.': '.', '+': '+', '-': '-', '*': '×', '/': '÷',
+        'Enter': '=', 'Escape': 'Clear', 'Backspace': 'Backspace'
+    };
+    
+    if (keyMap[e.key]) {
+        e.preventDefault();
+        handleInput(keyMap[e.key]);
+    }
 });
