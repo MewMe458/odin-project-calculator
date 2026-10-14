@@ -14,8 +14,16 @@ function divide(a, b) {
     console.log("The divide function is working!");
 }
 
+function operate(operator, a, b) {
+    if (operator === 'add') { add(a, b) }
+    else if (operator === 'subtract') { subtract(a, b) }
+    else if (operator === 'multiply') { multiply(a, b) }
+    else if (operator === 'divide') { divide(a, b) }
+    else { console.log('Unknown operator') }
+}
+
 let firstNumber = 0;
-let operator = "+";
+let operator = "add";
 let secondNumber = 0;
 
 add(1,2);
