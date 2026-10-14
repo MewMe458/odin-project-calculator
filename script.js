@@ -48,6 +48,16 @@ buttons.forEach(button => {
             return;
         }
 
+        if (value === '⌫') {
+            if (isResultDisplayed) return;
+            currentInput = currentInput.slice(0, -1);
+            display.innerText = currentInput === "" ? "0" : currentInput;
+            if (operator !== null) {
+                secondNumber = currentInput === "" ? null : parseFloat(currentInput);
+            }
+            return;
+        }
+
         if (value === '=') {
             if (firstNumber !== null && operator !== null && secondNumber !== null) {
                 let result = operate(operator, firstNumber, secondNumber);
